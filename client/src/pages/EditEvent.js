@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './EventForm.css';
@@ -25,11 +25,7 @@ const EditEvent = () => {
 
   const categories = ['Technology', 'Business', 'Arts', 'Sports', 'Education', 'Food & Drink', 'Music', 'Networking', 'Other'];
 
-  useEffect(() => {
-    fetchEvent();
-  }, [id]);
-
-  const fetchEvent = async () => {
+  const fetchEvent = useCallback(async () => {
     try {
       const res = await axios.get(`${API_URL}/events/${id}`);
       const event = res.data;
@@ -47,7 +43,11 @@ const EditEvent = () => {
     } finally {
       setFetching(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchEvent();
+  }, [fetchEvent]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

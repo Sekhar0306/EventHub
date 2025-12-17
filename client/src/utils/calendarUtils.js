@@ -27,10 +27,6 @@ export const generateOutlookCalendarUrl = (event) => {
   const startDate = new Date(event.date);
   const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
 
-  const formatDate = (date) => {
-    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-  };
-
   const params = new URLSearchParams({
     subject: event.title,
     startdt: startDate.toISOString(),
@@ -45,7 +41,6 @@ export const generateOutlookCalendarUrl = (event) => {
 // Generate Yahoo Calendar URL
 export const generateYahooCalendarUrl = (event) => {
   const startDate = new Date(event.date);
-  const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
 
   const formatDate = (date) => {
     const year = date.getUTCFullYear();

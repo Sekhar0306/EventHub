@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useContext } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import EventCard from '../components/EventCard';
@@ -22,27 +21,8 @@ const Home = () => {
 
   const categories = ['Technology', 'Business', 'Arts', 'Sports', 'Education', 'Food & Drink', 'Music', 'Networking', 'Other'];
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  // Auto-search on filter change
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchTerm || selectedCategory || startDate || endDate) {
-        handleSearch();
-      }
-    }, 500); // Debounce search
-
-    return () => clearTimeout(timer);
-  }, [searchTerm, selectedCategory, startDate, endDate]);
-
-  useEffect(() => {
-    applyFilters();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, selectedCategory, startDate, endDate, events]);
-
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
+    setLoading(true);
     try {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
@@ -59,7 +39,11 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, selectedCategory, startDate, endDate]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const applyFilters = () => {
     let filtered = [...events];
@@ -87,7 +71,7 @@ const Home = () => {
     setFilteredEvents(filtered);
   };
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -105,7 +89,23 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, selectedCategory, startDate, endDate]);
+
+  // Auto-search on filter change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm || selectedCategory || startDate || endDate) {
+        handleSearch();
+      }
+    }, 500); // Debounce search
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, selectedCategory, startDate, endDate, handleSearch]);
+
+  useEffect(() => {
+    applyFilters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, selectedCategory, startDate, endDate, events]);
 
   const clearFilters = () => {
     setSearchTerm('');
