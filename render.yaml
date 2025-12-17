@@ -2,9 +2,10 @@ services:
   - type: web
     name: event-management-backend
     env: node
-    rootDir: server
-    buildCommand: npm install --production=false
-    startCommand: npm start
+    plan: free
+    region: oregon
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
     envVars:
       - key: NODE_ENV
         value: production
